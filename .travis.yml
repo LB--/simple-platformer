@@ -30,6 +30,8 @@ cache:
   directories:
   - "$HOME/.travis/cmake/build/install"
   - "$HOME/SDL2/build/install"
+  - "build/Corrade-prefix"
+  - "build/Magnum-prefix"
 
 before_install:
   - if [ "$CC"  == "gcc"     ]; then export CC=gcc-5; fi
@@ -54,7 +56,7 @@ install:
   - popd
 
 script:
-  - mkdir build && cd build
+  - mkdir -p build && cd build
   - cmake ..
   - cmake --build .
   - ctest -VV
