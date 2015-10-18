@@ -33,7 +33,7 @@ target_link_libraries(simple-platformer
 	${MAGNUM_PRIMITIVES_LIBRARIES}
 	${MAGNUM_SHADERS_LIBRARIES}
 )
-if(MAGNUM_BUILD_STATIC)
+if(WIN32 AND MAGNUM_BUILD_STATIC)
 	# Link SDL dependencies
 	target_link_libraries(simple-platformer
 		mingw32
