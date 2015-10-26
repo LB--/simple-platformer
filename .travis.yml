@@ -32,6 +32,8 @@ cache:
   - "$HOME/SDL2/build/install"
   - "build/Corrade-prefix"
   - "build/Magnum-prefix"
+  - "build/FreeType-prefix"
+  - "build/MagnumPlugins-prefix"
 
 before_install:
   - if [ "$CC"  == "gcc"     ]; then export CC=gcc-5; fi

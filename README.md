@@ -6,7 +6,53 @@ Just a simple C++14 3D platformer in the public domain, using [Magnum](https://g
 ## Building
 
 Building is done via the CMake superproject in the root directory.
-It automatically downloads and builds Corrade and Magnum for you.
+It automatically downloads and builds shared versions of Corrade, Magnum, FreeType, and Magnum Plugins for you.
 If you already have those, just build from the `src` directory instead.
 
-Note: you need to have SDL2 already installed.
+Either way, you need to have SDL2 shared devel libraries already installed, as well as any other dependencies Magnum requires for your particular system.
+
+Typical build script:
+```sh
+mkrdir build && cd build
+cmake -G "MinGW Makefiles" ..
+cmake --build .
+```
+After that, the `simple-platformer` executable will be in `build/deps-install/bin/`.
+For continuous development, just keep running `cmake --build .` - only things which have changed will be rebuilt.
+
+### Building on Windows
+
+This should be relatively painless if you use [nuwen MinGW](http://nuwen.net/mingw.html).
+After installing nuwen MinGW, visit `C:/MinGW/bin` and copy or symlink `make` to `mingw32-make` so that the MinGW CMake generator is available.
+Nuwen MinGW only ships with static SDL2 libraries, so you need to [download the development libraries for MinGW](https://www.libsdl.org/download-2.0.php) - choose `SDL2-devel-2.y.z-mingw.tar.gz` and extract with your archive program of choice (e.g. 7zip or WinRAR).
+Then, add the correct directory to your PATH environment variable (or include in `CMAKE_PREFIX_PATH`).
+Specifically, you want the correct lib folder: `lib/x64` or `lib/x86`.
+Also, you need to set `-DCUSTOM_MAGNUM_ARGS="-DSDL2_INCLUDE_DIR=C:/path/to/SDL2/include"`
+Then, just build with CMake as directed above.
+
+#### Using MSVC / Visual Studio
+
+If you want to use Visual Studio, you will need at least Visual Studio 2015, as that is the earliest version supported by Magnum.
+You will also need to [download the SDL2 development libraries for MSVC](https://www.libsdl.org/download-2.0.php) - choose `SDL2-devel-2.y.z-VC.zip` and extract it.
+Then, add the correct directory to your PATH environment variable (or include in `CMAKE_PREFIX_PATH`).
+Specifically, you want the correct lib folder: `lib/x64` or `lib/x86`.
+Also, you need to set `-DCUSTOM_MAGNUM_ARGS="-DSDL2_INCLUDE_DIR=C:/path/to/SDL2/include"`
+
+This project also requires FreeType to be built as a shared library rather than a static library.
+However, if you look at FreeType's `CMakeLists.txt`, you will see this wonderful nugget of insight:
+```cmake
+if (WIN32 AND NOT MINGW AND BUILD_SHARED_LIBS)
+  message(FATAL_ERROR "Building shared libraries on Windows needs MinGW")
+endif ()
+```
+Despite what the message says, [it is possible to use Visual Studio to build the shared library](http://stackoverflow.com/a/7387618/1959975).
+Follow the instructions at that link and then ensure that the DLL and lib files are present in the PATH environment variable.
+(Or include the path to them in `CMAKE_PREFIX_PATH`)
+
+For some reason building with MSVC makes `find_package` less smart, and you may have to battle the dreaded `Could NOT find Freetype (missing: FREETYPE_LIBRARY) (found version "2.6.1")`.
+If you're having trouble, open an issue with a link to your CMake build log on https://gist.github.com/ and I'll try to help.
+
+### Building on Linux
+
+Look at the `.travis.yml` file for hints.
+If you get it working on your system, consider adding helpful instructions to this readme!
