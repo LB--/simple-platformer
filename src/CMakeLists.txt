@@ -7,6 +7,7 @@ find_package(Magnum REQUIRED
 	COMPONENTS
 		MeshTools
 		Primitives
+		SceneGraph
 		Shaders
 		Sdl2Application
 		Text
@@ -46,6 +47,7 @@ target_link_libraries(simple-platformer
 	${MAGNUM_APPLICATION_LIBRARIES}
 	${MAGNUM_MESHTOOLS_LIBRARIES}
 	${MAGNUM_PRIMITIVES_LIBRARIES}
+	${MAGNUM_SCENEGRAPH_LIBRARIES}
 	${MAGNUM_SHADERS_LIBRARIES}
 	${MAGNUM_TEXT_LIBRARIES}
 )
