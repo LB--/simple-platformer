@@ -61,9 +61,9 @@ struct SimplePlatformer final
 	{
 		Magnum::Debug()
 			<< "This application is running on"
-			<< Magnum::Context::current()->version()
+			<< Magnum::Context::current().version()
 			<< "using"
-			<< Magnum::Context::current()->rendererString();
+			<< Magnum::Context::current().rendererString();
 
 		camera_object.translate(Vector3::zAxis(5.0f));
 		camera
