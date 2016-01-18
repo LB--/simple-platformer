@@ -61,7 +61,7 @@ script:
   - mkdir -p build && cd build
   - export PATH="$(pwd)/deps-install/bin:$PATH"
   - export LD_LIBRARY_PATH="$(pwd)/deps-install/lib:$LD_LIBRARY_PATH"
-  - cmake ..
+  - cmake .. -DCMAKE_INSTALL_PREFIX="$(pwd)/install"
   - cmake --build .
   - ctest -VV
 

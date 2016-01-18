@@ -1,24 +1,25 @@
 cmake_minimum_required(VERSION 3.3)
 
-project(simple-platformer-build)
+project(simple-platformer-build
+	LANGUAGES NONE
+)
 
 include(ExternalProject)
-set(DEPS_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/deps-install")
 ExternalProject_Add(Corrade
-	GIT_REPOSITORY "git://github.com/mosra/corrade.git"
+	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/corrade"
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
-		"-DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}"
+		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
 		${CUSTOM_CORRADE_ARGS}
 	TEST_EXCLUDE_FROM_MAIN 1
 )
 ExternalProject_Add(Magnum
 	DEPENDS
 		Corrade
-	GIT_REPOSITORY "git://github.com/mosra/magnum.git"
+	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/magnum"
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
-		"-DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}"
+		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
 		"-DWITH_SDL2APPLICATION=ON"
 		"-DWITH_SHADERS=ON"
 		"-DWITH_TEXT=ON"
@@ -28,10 +29,10 @@ ExternalProject_Add(Magnum
 if(NOT MSVC)
 	set(FREETYPE_TARGET "FreeType")
 	ExternalProject_Add(${FREETYPE_TARGET}
-		GIT_REPOSITORY "git://git.sv.gnu.org/freetype/freetype2.git"
+		SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/freetype2"
 		LIST_SEPARATOR "#"
 		CMAKE_ARGS
-			"-DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}"
+			"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
 			"-DBUILD_SHARED_LIBS=ON"
 			${CUSTOM_FREETYPE_ARGS}
 		TEST_EXCLUDE_FROM_MAIN 1
@@ -44,10 +45,10 @@ ExternalProject_Add(MagnumPlugins
 		Corrade
 		Magnum
 		${FREETYPE_TARGET}
-	GIT_REPOSITORY "git://github.com/mosra/magnum-plugins.git"
+	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/magnum-plugins"
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
-		"-DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}"
+		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
 		"-DWITH_FREETYPEFONT=ON"
 		${CUSTOM_MAGNUMPLUGINS_ARGS}
 	TEST_EXCLUDE_FROM_MAIN 1
@@ -57,10 +58,10 @@ ExternalProject_Add(simple-platformer
 		Corrade
 		Magnum
 		MagnumPlugins
-	SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/src"
+	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
-		"-DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}"
-		"-DCMAKE_MODULE_PATH=${DEPS_INSTALL_DIR}#${CMAKE_CURRENT_BINARY_DIR}/Magnum-prefix/src/Magnum/modules"
+		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+		"-DCMAKE_MODULE_PATH=${CMAKE_INSTALL_PREFIX}#${CMAKE_CURRENT_SOURCE_DIR}/deps/magnum/modules"
 		${CUSTOM_SIMPLEPLATFORMER_ARGS}
 )

@@ -1,0 +1,12 @@
+[submodule "deps/corrade"]
+	path = deps/corrade
+	url = git://github.com/mosra/corrade.git
+[submodule "deps/magnum"]
+	path = deps/magnum
+	url = git://github.com/mosra/magnum.git
+[submodule "deps/freetype2"]
+	path = deps/freetype2
+	url = git://git.sv.gnu.org/freetype/freetype2.git
+[submodule "deps/magnum-plugins"]
+	path = deps/magnum-plugins
+	url = git://github.com/mosra/magnum-plugins.git
