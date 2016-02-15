@@ -1,7 +1,5 @@
 #include "config.h"
 
-#include "Resources.hpp"
-
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Buffer.h>

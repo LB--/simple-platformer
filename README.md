@@ -6,7 +6,7 @@ Just a simple C++14 3D platformer in the public domain, using [Magnum](https://g
 ## Building
 
 Building is done via the CMake superproject in the root directory.
-It automatically downloads and builds shared versions of Corrade, Magnum, FreeType, and Magnum Plugins for you.
+It automatically builds shared versions of Corrade, Magnum, FreeType, and Magnum Plugins for you.
 If you already have those, just build from the `src` directory instead.
 
 Either way, you need to have SDL2 shared devel libraries already installed, as well as any other dependencies Magnum requires for your particular system.
@@ -14,7 +14,7 @@ Either way, you need to have SDL2 shared devel libraries already installed, as w
 Typical build script:
 ```sh
 mkrdir build && cd build
-cmake -G "MinGW Makefiles" ..
+cmake -G "MinGW Makefiles" .. -DCMAKE_INSTALL_PREFIX="where/you/want/everything"
 cmake --build .
 ```
 After that, the `simple-platformer` executable will be in `build/deps-install/bin/`.

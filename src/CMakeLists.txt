@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.3)
 
-project(simple-platformer)
+project(simple-platformer
+	VERSION 0.0.0
+	LANGUAGES CXX
+)
 
 find_package(Corrade REQUIRED)
 find_package(Magnum REQUIRED
