@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include "object/Cube.hpp"
+
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Buffer.h>
@@ -8,8 +10,6 @@
 #include <Magnum/Math/Angle.h>
 #include <Magnum/Math/Complex.h>
 #include <Magnum/Mesh.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Renderer.h>
@@ -27,6 +27,7 @@
 #include <Magnum/Version.h>
 
 #include <cstdlib>
+#include <functional>
 #include <memory>
 #include <tuple>
 
@@ -123,26 +124,9 @@ struct SimplePlatformer final
 		text_project = Matrix3::scaling(Vector2::yScale(Vector2{Magnum::defaultFramebuffer.viewport().size()}.aspectRatio()));
 		text_renderer->render("Simple Platformer");
 
-		Magnum::Trade::MeshData3D cube = Magnum::Primitives::Cube::solid();
-
-		vertexBuffer.setData(Magnum::MeshTools::interleave(cube.positions(0), cube.normals(0)), Magnum::BufferUsage::StaticDraw);
-
-		Magnum::Containers::Array<char> indexData;
-		Magnum::Mesh::IndexType indexType;
-		Magnum::UnsignedInt indexStart, indexEnd;
-		std::tie(indexData, indexType, indexStart, indexEnd) = Magnum::MeshTools::compressIndices(cube.indices());
-		indexBuffer.setData(indexData, Magnum::BufferUsage::StaticDraw);
-
-		mesh
-			.setPrimitive(cube.primitive())
-			.setCount(cube.indices().size())
-			.addVertexBuffer(vertexBuffer, 0, Magnum::Shaders::Phong::Position{}, Magnum::Shaders::Phong::Normal{})
-			.setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
-
 		transformation
 			= Matrix4::rotationX(Magnum::Deg(30.0f))
 			* Matrix4::rotationY(Magnum::Deg(40.0f));
-		color = Magnum::Color3::fromHSV(Magnum::Deg(35.0f), 1.0f, 1.0f);
 
 		projection
 			= Matrix4::perspectiveProjection
@@ -163,17 +147,7 @@ private:
 	{
 		Magnum::defaultFramebuffer.clear(Magnum::FramebufferClear::Color|Magnum::FramebufferClear::Depth);
 
-		color = Magnum::Color3::fromHSV(color.hue() + Magnum::Deg(90.0*timeline.previousFrameDuration()), 1.0f, 1.0f);
-
-		shader
-			.setLightPosition({7.0f, 5.0f, 2.5f})
-			.setLightColor(Magnum::Color3(1.0f))
-			.setDiffuseColor(color)
-			.setAmbientColor(Magnum::Color3::fromHSV(color.hue(), 1.0f, 0.3f))
-			.setTransformationMatrix(transformation)
-			.setNormalMatrix(transformation.rotationScaling())
-			.setProjectionMatrix(projection);
-		mesh.draw(shader);
+		camera.draw(drawables);
 
 		text_shader.setVectorTexture(glyph_cache.texture());
 		text_shader
@@ -190,8 +164,6 @@ private:
 			.setOutlineRange(0.5f, 1.0f)
 			.setSmoothness(0.075f);
 		text_renderer->mesh().draw(text_shader);
-
-		camera.draw(drawables);
 
 		swapBuffers();
 		redraw();
@@ -222,12 +194,16 @@ private:
 		redraw();
 	}
 
+	Magnum::Timeline timeline;
+	Magnum::Buffer indexBuffer, vertexBuffer;
+
 	using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 	using Scene3D  = SceneGraph::Scene <SceneGraph::MatrixTransformation3D>;
 	Scene3D scene;
 	Object3D &camera_object {scene.addChild<Object3D>()};
 	SceneGraph::Camera3D &camera {camera_object.addFeature<SceneGraph::Camera3D>()};
 	SceneGraph::DrawableGroup3D drawables;
+	simplat::object::Cube &cube {scene.addChild<simplat::object::Cube>(std::ref(drawables), std::cref(timeline))};
 
 	Corrade::PluginManager::Manager<Text::AbstractFont> font_plugins;
 	std::unique_ptr<Text::AbstractFont> font;
@@ -237,14 +213,8 @@ private:
 	Magnum::Shaders::DistanceFieldVector2D text_shader;
 	Matrix3 text_transform, text_project;
 
-	Magnum::Timeline timeline;
-	Magnum::Buffer indexBuffer, vertexBuffer;
-	Magnum::Mesh mesh;
-	Magnum::Shaders::Phong shader;
-
 	Matrix4 transformation, projection;
 	Vector2i previousMousePosition;
-	Magnum::Color3 color;
 };
 
 MAGNUM_APPLICATION_MAIN(SimplePlatformer);
