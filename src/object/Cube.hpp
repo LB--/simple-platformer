@@ -19,7 +19,6 @@ namespace simplat { namespace object
 {
 	using Object3D = Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation3D>;
 	using Magnum::SceneGraph::Drawable3D;
-	using Magnum::Matrix4;
 	struct Cube
 	: Object3D
 	, Drawable3D
@@ -44,6 +43,10 @@ namespace simplat { namespace object
 				.setCount(cube.indices().size())
 				.addVertexBuffer(vertices, 0, Magnum::Shaders::Phong::Position{}, Magnum::Shaders::Phong::Normal{})
 				.setIndexBuffer(indices, 0, indexType, indexStart, indexEnd);
+
+			shader
+				.setLightPosition({7.0f, 5.0f, 2.5f})
+				.setLightColor(Magnum::Color3(1.0f));
 		}
 
 	private:
@@ -53,12 +56,10 @@ namespace simplat { namespace object
 		Magnum::Buffer vertices, indices;
 		Magnum::Shaders::Phong shader;
 
-		virtual void draw(Matrix4 const &transmat, Magnum::SceneGraph::Camera3D &cam) override
+		virtual void draw(Magnum::Matrix4 const &transmat, Magnum::SceneGraph::Camera3D &cam) override
 		{
 			color = Magnum::Color3::fromHSV(color.hue() + Magnum::Deg(90.0*timeline.previousFrameDuration()), 1.0f, 1.0f);
 			shader
-				.setLightPosition({7.0f, 5.0f, 2.5f})
-				.setLightColor(Magnum::Color3(1.0f))
 				.setDiffuseColor(color)
 				.setAmbientColor(Magnum::Color3::fromHSV(color.hue(), 1.0f, 0.3f))
 				.setTransformationMatrix(transmat)

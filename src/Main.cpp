@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "object/Cube.hpp"
+#include "ui/Framerate.hpp"
 
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Resource.h>
@@ -15,6 +16,7 @@
 #include <Magnum/Renderer.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/SceneGraph/MatrixTransformation2D.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/DistanceFieldVector.h>
@@ -66,10 +68,11 @@ struct SimplePlatformer final
 			<< "using"
 			<< Magnum::Context::current().rendererString();
 
-		camera_object.translate(Vector3::zAxis(5.0f));
-		camera
-			.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-			.setViewport(Magnum::defaultFramebuffer.viewport().size());
+//		Renderer::enable(Renderer::Feature::DepthTest); //breaks text rendering
+		Renderer::enable(Renderer::Feature::FaceCulling);
+		Renderer::enable(Renderer::Feature::Blending);
+		Renderer::setBlendFunction(BlendFunction::One, BlendFunction::OneMinusSourceAlpha);
+		Renderer::setBlendEquation(BlendEquation::Add, BlendEquation::Add);
 
 		font = font_plugins.loadAndInstantiate("FreeTypeFont");
 		if(!font)
@@ -108,13 +111,6 @@ struct SimplePlatformer final
 			Magnum::BufferUsage::StaticDraw
 		);
 
-		Renderer::enable(Renderer::Feature::DepthTest);
-		Renderer::enable(Renderer::Feature::FaceCulling);
-
-		Renderer::enable(Renderer::Feature::Blending);
-		Renderer::setBlendFunction(BlendFunction::One, BlendFunction::OneMinusSourceAlpha);
-		Renderer::setBlendEquation(BlendEquation::Add, BlendEquation::Add);
-
 		text_transform = Matrix3::rotation(Magnum::Deg(-10.0f));
 		text_project = Matrix3::scaling(Vector2::yScale(Vector2{Magnum::defaultFramebuffer.viewport().size()}.aspectRatio()));
 
@@ -123,6 +119,11 @@ struct SimplePlatformer final
 			* Matrix4::rotationY(Magnum::Deg(40.0f));
 		cube.setTransformation(transformation);
 
+
+		camera_object.translate(Vector3::zAxis(5.0f));
+		camera
+			.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+			.setViewport(Magnum::defaultFramebuffer.viewport().size());
 		camera.setProjectionMatrix(Matrix4::perspectiveProjection
 			(
 				Magnum::Deg(35.0f),
@@ -132,6 +133,11 @@ struct SimplePlatformer final
 			)
 			* Matrix4::translation(Vector3::zAxis(-10.0f))
 		);
+
+		ui_camera
+			.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+			.setProjectionMatrix(Magnum::Matrix3::projection({16.0f/9.0f, 1.0f}))
+			.setViewport(Magnum::defaultFramebuffer.viewport().size());
 
 		setSwapInterval(1); //enable VSync
 		timeline.start();
@@ -143,6 +149,7 @@ private:
 		Magnum::defaultFramebuffer.clear(Magnum::FramebufferClear::Color|Magnum::FramebufferClear::Depth);
 
 		camera.draw(drawables);
+		ui_camera.draw(ui_drawables);
 
 		text_shader.setVectorTexture(glyph_cache.texture());
 		text_shader
@@ -216,6 +223,14 @@ private:
 	std::unique_ptr<Text::Renderer2D> fps_renderer;
 	Magnum::Shaders::DistanceFieldVector2D text_shader;
 	Matrix3 text_transform, text_project;
+
+	using Object2D = SceneGraph::Object<SceneGraph::MatrixTransformation2D>;
+	using Scene2D  = SceneGraph::Scene <SceneGraph::MatrixTransformation2D>;
+	Scene2D ui;
+	Object2D &ui_camera_object {ui.addChild<Object2D>()};
+	SceneGraph::Camera2D &ui_camera {ui_camera_object.addFeature<SceneGraph::Camera2D>()};
+	SceneGraph::DrawableGroup2D ui_drawables;
+//	simplat::ui::Framerate &framerate {ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(timeline), std::ref(*font), std::cref(glyph_cache))};
 
 	Matrix4 transformation;
 	Vector2i previousMousePosition;
