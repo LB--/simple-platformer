@@ -30,11 +30,7 @@ cache:
   directories:
   - "$HOME/.travis/cmake/build/install"
   - "$HOME/SDL2/build/install"
-  - "build/Corrade-prefix"
-  - "build/Magnum-prefix"
-  - "build/FreeType-prefix"
-  - "build/MagnumPlugins-prefix"
-  - "build/install"
+  - "build"
 
 before_install:
   - if [ "$CC"  == "gcc"     ]; then export CC=gcc-5; fi
@@ -59,12 +55,12 @@ install:
   - popd
 
 script:
+  - if [ ! -d "build/install" ]; then export FROM_SCRATCH="yes"; else export FROM_SCRATCH="no"; fi
   - mkdir -p build && cd build
-  - export PATH="$(pwd)/deps-install/bin:$PATH"
+  - export PATH="$(pwd)/install/bin:$PATH"
   - export LD_LIBRARY_PATH="$(pwd)/install/lib:$LD_LIBRARY_PATH"
-  - cmake .. -DCMAKE_INSTALL_PREFIX="$(pwd)/install"
+  - if [ "$FROM_SCRATCH" == "yes" ]; then cmake .. -DCMAKE_INSTALL_PREFIX="$(pwd)/install"; fi
   - cmake --build .
-  - ctest -VV
 
 notifications:
   email: false
