@@ -7,7 +7,7 @@ project(simple-platformer-build
 include(ExternalProject)
 ExternalProject_Add(Corrade
 	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/corrade"
-	UPDATE_COMMAND cmake -E touch_nocreate "CMakeLists.txt"
+	BUILD_ALWAYS 1
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
 		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
@@ -18,7 +18,7 @@ ExternalProject_Add(Magnum
 	DEPENDS
 		Corrade
 	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/magnum"
-	UPDATE_COMMAND cmake -E touch_nocreate "CMakeLists.txt"
+	BUILD_ALWAYS 1
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
 		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
@@ -32,7 +32,7 @@ if(NOT MSVC)
 	set(FREETYPE_TARGET "FreeType")
 	ExternalProject_Add(${FREETYPE_TARGET}
 		SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/freetype2"
-		UPDATE_COMMAND cmake -E touch_nocreate "CMakeLists.txt"
+		BUILD_ALWAYS 1
 		LIST_SEPARATOR "#"
 		CMAKE_ARGS
 			"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
@@ -49,7 +49,7 @@ ExternalProject_Add(MagnumPlugins
 		Magnum
 		${FREETYPE_TARGET}
 	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/magnum-plugins"
-	UPDATE_COMMAND cmake -E touch_nocreate "CMakeLists.txt"
+	BUILD_ALWAYS 1
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
 		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
@@ -63,7 +63,7 @@ ExternalProject_Add(simple-platformer
 		Magnum
 		MagnumPlugins
 	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
-	UPDATE_COMMAND cmake -E touch_nocreate "CMakeLists.txt"
+	BUILD_ALWAYS 1
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
 		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
