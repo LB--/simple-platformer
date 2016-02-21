@@ -70,4 +70,6 @@ ExternalProject_Add(simple-platformer
 		"-DCMAKE_MODULE_PATH=${CMAKE_INSTALL_PREFIX}#${CMAKE_CURRENT_SOURCE_DIR}/deps/magnum/modules"
 		${CUSTOM_SIMPLEPLATFORMER_ARGS}
 	TEST_AFTER_INSTALL 1
+	TEST_COMMAND
+		ctest -VV
 )

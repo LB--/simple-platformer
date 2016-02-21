@@ -60,3 +60,7 @@ install(
 		simple-platformer
 	RUNTIME DESTINATION bin
 )
+
+enable_testing()
+
+#...
