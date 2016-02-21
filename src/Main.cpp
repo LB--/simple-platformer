@@ -67,13 +67,6 @@ struct SimplePlatformer final
 		camera_object.translate(Vector3::zAxis(5.0f));
 		camera
 			.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-			.setProjectionMatrix(Matrix4::perspectiveProjection
-			(
-				35.0_degf,
-				4.0f/3.0f,
-				0.001f,
-				100.0f
-			))
 			.setViewport(Magnum::defaultFramebuffer.viewport().size());
 
 		font = font_plugins.loadAndInstantiate("FreeTypeFont");
@@ -127,16 +120,17 @@ struct SimplePlatformer final
 		transformation
 			= Matrix4::rotationX(Magnum::Deg(30.0f))
 			* Matrix4::rotationY(Magnum::Deg(40.0f));
+		cube.setTransformation(transformation);
 
-		projection
-			= Matrix4::perspectiveProjection
+		camera.setProjectionMatrix(Matrix4::perspectiveProjection
 			(
 				Magnum::Deg(35.0f),
 				Vector2(Magnum::defaultFramebuffer.viewport().size()).aspectRatio(),
 				0.01f,
 				100.0f
 			)
-			* Matrix4::translation(Vector3::zAxis(-10.0f));
+			* Matrix4::translation(Vector3::zAxis(-10.0f))
+		);
 
 		setSwapInterval(1); //enable VSync
 		timeline.start();
@@ -188,6 +182,7 @@ private:
 			= Matrix4::rotationX(Magnum::Rad(delta.y()))
 			* transformation
 			* Matrix4::rotationY(Magnum::Rad(delta.x()));
+		cube.setTransformation(transformation);
 
 		previousMousePosition = e.position();
 		e.setAccepted();
@@ -213,7 +208,7 @@ private:
 	Magnum::Shaders::DistanceFieldVector2D text_shader;
 	Matrix3 text_transform, text_project;
 
-	Matrix4 transformation, projection;
+	Matrix4 transformation;
 	Vector2i previousMousePosition;
 };
 
