@@ -26,9 +26,11 @@
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/Version.h>
 
+#include <chrono>
 #include <cstdlib>
 #include <functional>
 #include <memory>
+#include <string>
 #include <tuple>
 
 using Magnum::Math::operator""_degf;
@@ -92,14 +94,14 @@ struct SimplePlatformer final
 			Text::Alignment::MiddleCenter
 		);
 
-		text_renderer = std::make_unique<Text::Renderer2D>
+		fps_renderer = std::make_unique<Text::Renderer2D>
 		(
 			*font,
 			glyph_cache,
 			0.035f,
 			Text::Alignment::TopRight
 		);
-		text_renderer->reserve
+		fps_renderer->reserve
 		(
 			40,
 			Magnum::BufferUsage::DynamicDraw,
@@ -115,7 +117,6 @@ struct SimplePlatformer final
 
 		text_transform = Matrix3::rotation(Magnum::Deg(-10.0f));
 		text_project = Matrix3::scaling(Vector2::yScale(Vector2{Magnum::defaultFramebuffer.viewport().size()}.aspectRatio()));
-		text_renderer->render("Simple Platformer");
 
 		transformation
 			= Matrix4::rotationX(Magnum::Deg(30.0f))
@@ -157,7 +158,14 @@ private:
 			.setColor(Magnum::Color4{1.0f, 0.0f})
 			.setOutlineRange(0.5f, 1.0f)
 			.setSmoothness(0.075f);
-		text_renderer->mesh().draw(text_shader);
+		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+		if(now > next_fps)
+		{
+			fps_renderer->render(std::to_string(1.0f/timeline.previousFrameDuration()));
+			using namespace std::literals::chrono_literals;
+			next_fps = now + 500ms;
+		}
+		fps_renderer->mesh().draw(text_shader);
 
 		swapBuffers();
 		redraw();
@@ -190,6 +198,7 @@ private:
 	}
 
 	Magnum::Timeline timeline;
+	std::chrono::system_clock::time_point next_fps = std::chrono::system_clock::now();
 	Magnum::Buffer indexBuffer, vertexBuffer;
 
 	using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
@@ -204,7 +213,7 @@ private:
 	std::unique_ptr<Text::AbstractFont> font;
 	Text::DistanceFieldGlyphCache glyph_cache;
 	Magnum::Mesh text_mesh;
-	std::unique_ptr<Text::Renderer2D> text_renderer;
+	std::unique_ptr<Text::Renderer2D> fps_renderer;
 	Magnum::Shaders::DistanceFieldVector2D text_shader;
 	Matrix3 text_transform, text_project;
 
