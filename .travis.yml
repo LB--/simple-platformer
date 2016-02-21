@@ -56,6 +56,7 @@ install:
   - popd
 
 script:
+  - git submodule foreach 'git add --all && git reset --hard'
   - git add --all && git reset --hard
   - if [ ! -d "build/install" ]; then export FROM_SCRATCH="yes"; else export FROM_SCRATCH="no"; fi
   - mkdir -p build && cd build
