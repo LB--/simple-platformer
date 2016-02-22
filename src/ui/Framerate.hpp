@@ -52,20 +52,37 @@ namespace simplat { namespace ui
 			Magnum::Text::Alignment::TopRight
 		};
 		Magnum::Shaders::DistanceFieldVector2D shader;
-		std::chrono::system_clock::time_point next = std::chrono::system_clock::now();
+
+		std::chrono::system_clock::time_point next = std::chrono::system_clock::now(); //when to next update the displayed framerate
+		float total {}; //combined rendering time over the last x frames
+		unsigned frames {}; //how many frames went into total
 
 		virtual void draw(Magnum::Matrix3 const &transmat, Magnum::SceneGraph::Camera2D &cam) override
 		{
+			//update average
+			total += timeline.previousFrameDuration();
+			++frames;
+
+			//check if we need to update the displayed framerate
 			std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
 			if(now > next)
 			{
-				auto const fps = std::to_string(1.0f/timeline.previousFrameDuration());
-				renderer.render(fps);
+				renderer.render(std::to_string(frames/total));
 				using namespace std::literals::chrono_literals;
 				next = now + 500ms;
+				total = {};
+				frames = {};
 			}
-			shader
-				.setTransformationProjectionMatrix(cam.projectionMatrix() * Magnum::Matrix3::translation(1.0f/cam.projectionMatrix().rotationScaling().diagonal()));
+
+			//render the displayed framerate
+			shader.setTransformationProjectionMatrix
+			(
+				cam.projectionMatrix() *
+				Magnum::Matrix3::translation
+				(
+					1.0f/cam.projectionMatrix().rotationScaling().diagonal()
+				)
+			);
 			renderer.mesh().draw(shader);
 		}
 	};

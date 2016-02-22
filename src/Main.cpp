@@ -97,19 +97,7 @@ struct SimplePlatformer final
 			Text::Alignment::MiddleCenter
 		);
 
-		fps_renderer = std::make_unique<Text::Renderer2D>
-		(
-			*font,
-			glyph_cache,
-			0.035f,
-			Text::Alignment::TopRight
-		);
-		fps_renderer->reserve
-		(
-			40,
-			Magnum::BufferUsage::DynamicDraw,
-			Magnum::BufferUsage::StaticDraw
-		);
+		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(timeline), std::ref(*font), std::cref(glyph_cache));
 
 		text_transform = Matrix3::rotation(Magnum::Deg(-10.0f));
 		text_project = Matrix3::scaling(Vector2::yScale(Vector2{Magnum::defaultFramebuffer.viewport().size()}.aspectRatio()));
@@ -160,20 +148,6 @@ private:
 			.setSmoothness(0.025f);
 		text_mesh.draw(text_shader);
 
-		text_shader
-			.setTransformationProjectionMatrix(text_project * Matrix3::translation(1.0f/text_project.rotationScaling().diagonal()))
-			.setColor(Magnum::Color4{1.0f, 0.0f})
-			.setOutlineRange(0.5f, 1.0f)
-			.setSmoothness(0.075f);
-		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-		if(now > next_fps)
-		{
-			fps_renderer->render(std::to_string(1.0f/timeline.previousFrameDuration()));
-			using namespace std::literals::chrono_literals;
-			next_fps = now + 500ms;
-		}
-		fps_renderer->mesh().draw(text_shader);
-
 		swapBuffers();
 		redraw();
 		timeline.nextFrame();
@@ -220,7 +194,6 @@ private:
 	std::unique_ptr<Text::AbstractFont> font;
 	Text::DistanceFieldGlyphCache glyph_cache;
 	Magnum::Mesh text_mesh;
-	std::unique_ptr<Text::Renderer2D> fps_renderer;
 	Magnum::Shaders::DistanceFieldVector2D text_shader;
 	Matrix3 text_transform, text_project;
 
@@ -230,7 +203,6 @@ private:
 	Object2D &ui_camera_object {ui.addChild<Object2D>()};
 	SceneGraph::Camera2D &ui_camera {ui_camera_object.addFeature<SceneGraph::Camera2D>()};
 	SceneGraph::DrawableGroup2D ui_drawables;
-//	simplat::ui::Framerate &framerate {ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(timeline), std::ref(*font), std::cref(glyph_cache))};
 
 	Matrix4 transformation;
 	Vector2i previousMousePosition;
