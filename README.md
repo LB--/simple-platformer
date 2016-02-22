@@ -17,17 +17,17 @@ mkrdir build && cd build
 cmake -G "MinGW Makefiles" .. -DCMAKE_INSTALL_PREFIX="where/you/want/everything"
 cmake --build .
 ```
-After that, the `simple-platformer` executable will be in `build/deps-install/bin/`.
+After that, the `simple-platformer` executable will be in `where/you/want/everything/bin/`.
 For continuous development, just keep running `cmake --build .` - only things which have changed will be rebuilt.
 
 ### Building on Windows
 
 This should be relatively painless if you use [nuwen MinGW](http://nuwen.net/mingw.html).
-After installing nuwen MinGW, visit `C:/MinGW/bin` and copy or symlink `make` to `mingw32-make` so that the MinGW CMake generator is available.
+After installing nuwen MinGW, visit `C:/MinGW/bin` and if `ming32-make` isn't already there, copy or symlink `make` to `mingw32-make` so that the MinGW CMake generator is available.
 Nuwen MinGW only ships with static SDL2 libraries, so you need to [download the development libraries for MinGW](https://www.libsdl.org/download-2.0.php) - choose `SDL2-devel-2.y.z-mingw.tar.gz` and extract with your archive program of choice (e.g. 7zip or WinRAR).
 Then, add the correct directory to your PATH environment variable (or include in `CMAKE_PREFIX_PATH`).
 Specifically, you want the correct lib folder: `lib/x64` or `lib/x86`.
-Also, you need to set `-DCUSTOM_MAGNUM_ARGS="-DSDL2_INCLUDE_DIR=C:/path/to/SDL2/include"`
+Also, you need to set `"-DCUSTOM_SIMPLEPLATFORMER_ARGS=-DSDL2_INCLUDE_DIR=C:/path/to/SDL2/include"`
 Then, just build with CMake as directed above.
 
 #### Using MSVC / Visual Studio
@@ -36,7 +36,7 @@ If you want to use Visual Studio, you will need at least Visual Studio 2015, as 
 You will also need to [download the SDL2 development libraries for MSVC](https://www.libsdl.org/download-2.0.php) - choose `SDL2-devel-2.y.z-VC.zip` and extract it.
 Then, add the correct directory to your PATH environment variable (or include in `CMAKE_PREFIX_PATH`).
 Specifically, you want the correct lib folder: `lib/x64` or `lib/x86`.
-Also, you need to set `-DCUSTOM_MAGNUM_ARGS="-DSDL2_INCLUDE_DIR=C:/path/to/SDL2/include"`
+Also, you need to set `"-DCUSTOM_SIMPLEPLATFORMER_ARGS=-DSDL2_INCLUDE_DIR=C:/path/to/SDL2/include"`
 
 This project also requires FreeType to be built as a shared library rather than a static library.
 However, if you look at FreeType's `CMakeLists.txt`, you will see this wonderful nugget of insight:
