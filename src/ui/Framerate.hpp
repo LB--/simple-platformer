@@ -10,7 +10,6 @@
 #include <Magnum/Shaders/DistanceFieldVector.h>
 #include <Magnum/Timeline.h>
 
-#include <cfloat>
 #include <chrono>
 #include <string>
 
@@ -37,7 +36,7 @@ namespace simplat { namespace ui
 			);
 			shader
 				.setColor(Magnum::Color4{1.0f, 0.0f})
-				.setSmoothness(0.075f);
+;//				.setSmoothness(0.075f);
 		}
 
 	private:

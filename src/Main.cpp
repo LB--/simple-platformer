@@ -2,38 +2,28 @@
 
 #include "object/Cube.hpp"
 #include "ui/Framerate.hpp"
+#include "ui/Title.hpp"
 
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/Buffer.h>
 #include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Math/Angle.h>
-#include <Magnum/Math/Complex.h>
-#include <Magnum/Mesh.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Primitives/Cube.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation2D.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/DistanceFieldVector.h>
-#include <Magnum/Shaders/Phong.h>
 #include <Magnum/Text/AbstractFont.h>
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
-#include <Magnum/Text/Renderer.h>
 #include <Magnum/Timeline.h>
-#include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/Version.h>
 
-#include <chrono>
 #include <cstdlib>
 #include <functional>
 #include <memory>
 #include <string>
-#include <tuple>
 
 using Magnum::Math::operator""_degf;
 using Magnum::Matrix3;
@@ -60,7 +50,6 @@ struct SimplePlatformer final
 		}
 	, font_plugins{MAGNUM_PLUGINS_FONT_DIR}
 	, glyph_cache{Vector2i{2048}, Vector2i{512}, 22}
-	, text_mesh{Magnum::NoCreate}
 	{
 		Magnum::Debug()
 			<< "This application is running on"
@@ -74,40 +63,32 @@ struct SimplePlatformer final
 		Renderer::setBlendFunction(BlendFunction::One, BlendFunction::OneMinusSourceAlpha);
 		Renderer::setBlendEquation(BlendEquation::Add, BlendEquation::Add);
 
+		//load the font
 		font = font_plugins.loadAndInstantiate("FreeTypeFont");
 		if(!font)
 		{
 			std::exit(EXIT_FAILURE);
 		}
-
 		Corrade::Utility::Resource res {"data"};
 		if(!font->openSingleData(res.getRaw("data/OpenSans/OpenSans-Regular.ttf"), 110.0f))
 		{
 			Magnum::Error() << "Cannot open font file";
 			std::exit(EXIT_FAILURE);
 		}
-
 		font->fillGlyphCache(glyph_cache, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!'\"\\/[]{}<>()|");
-		std::tie(text_mesh, std::ignore) = Text::Renderer2D::render
-		(
-			*font, glyph_cache,
-			0.1295f,
-			"Hello, world!",
-			vertexBuffer, indexBuffer, Magnum::BufferUsage::StaticDraw,
-			Text::Alignment::MiddleCenter
-		);
 
+		//set up the UI
 		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(timeline), std::ref(*font), std::cref(glyph_cache));
+		ui.addChild<simplat::ui::Title>(std::ref(ui_drawables), std::ref(*font), std::ref(glyph_cache));
 
-		text_transform = Matrix3::rotation(Magnum::Deg(-10.0f));
-		text_project = Matrix3::scaling(Vector2::yScale(Vector2{Magnum::defaultFramebuffer.viewport().size()}.aspectRatio()));
-
+		//angle the cube
 		transformation
 			= Matrix4::rotationX(Magnum::Deg(30.0f))
 			* Matrix4::rotationY(Magnum::Deg(40.0f));
 		cube.setTransformation(transformation);
 
 
+		//set up the 3D camera
 		camera_object.translate(Vector3::zAxis(5.0f));
 		camera
 			.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
@@ -122,9 +103,10 @@ struct SimplePlatformer final
 			* Matrix4::translation(Vector3::zAxis(-10.0f))
 		);
 
+		//set up the UI camera
 		ui_camera
 			.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-			.setProjectionMatrix(Magnum::Matrix3::projection({16.0f/9.0f, 1.0f}))
+			.setProjectionMatrix(Matrix3::projection({16.0f/9.0f, 1.0f}))
 			.setViewport(Magnum::defaultFramebuffer.viewport().size());
 
 		setSwapInterval(1); //enable VSync
@@ -138,15 +120,6 @@ private:
 
 		camera.draw(drawables);
 		ui_camera.draw(ui_drawables);
-
-		text_shader.setVectorTexture(glyph_cache.texture());
-		text_shader
-			.setTransformationProjectionMatrix(text_project * text_transform)
-			.setColor(Magnum::Color3{1.0f})
-			.setOutlineColor(Magnum::Color3{0.0f, 0.7f, 0.0f})
-			.setOutlineRange(0.45f, 0.35f)
-			.setSmoothness(0.025f);
-		text_mesh.draw(text_shader);
 
 		swapBuffers();
 		redraw();
@@ -179,8 +152,6 @@ private:
 	}
 
 	Magnum::Timeline timeline;
-	std::chrono::system_clock::time_point next_fps = std::chrono::system_clock::now();
-	Magnum::Buffer indexBuffer, vertexBuffer;
 
 	using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 	using Scene3D  = SceneGraph::Scene <SceneGraph::MatrixTransformation3D>;
@@ -193,9 +164,6 @@ private:
 	Corrade::PluginManager::Manager<Text::AbstractFont> font_plugins;
 	std::unique_ptr<Text::AbstractFont> font;
 	Text::DistanceFieldGlyphCache glyph_cache;
-	Magnum::Mesh text_mesh;
-	Magnum::Shaders::DistanceFieldVector2D text_shader;
-	Matrix3 text_transform, text_project;
 
 	using Object2D = SceneGraph::Object<SceneGraph::MatrixTransformation2D>;
 	using Scene2D  = SceneGraph::Scene <SceneGraph::MatrixTransformation2D>;

@@ -44,6 +44,7 @@ target_include_directories(simple-platformer
 		${MAGNUM_APPLICATION_INCLUDE_DIRS}
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(simple-platformer
 	${MAGNUM_LIBRARIES}
