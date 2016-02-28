@@ -47,6 +47,7 @@ struct SimplePlatformer final
 			Configuration()
 				.setTitle("Simple Platformer")
 				.setSize({1280, 720})
+				.setWindowFlags(Configuration::WindowFlag::Resizable)
 		}
 	, font_plugins{MAGNUM_PLUGINS_FONT_DIR}
 	, glyph_cache{Vector2i{2048}, Vector2i{512}, 22}
@@ -114,6 +115,12 @@ struct SimplePlatformer final
 	}
 
 private:
+	virtual void viewportEvent(Vector2i const &size) override
+	{
+		Magnum::defaultFramebuffer.setViewport(Magnum::Range2Di{Vector2i{}, size});
+		camera.setViewport(size);
+		ui_camera.setViewport(size);
+	}
 	virtual void drawEvent() override
 	{
 		Magnum::defaultFramebuffer.clear(Magnum::FramebufferClear::Color|Magnum::FramebufferClear::Depth);
