@@ -121,6 +121,10 @@ private:
 		camera.setViewport(size);
 		ui_camera.setViewport(size);
 	}
+	virtual void tickEvent() override
+	{
+		//
+	}
 	virtual void drawEvent() override
 	{
 		Magnum::defaultFramebuffer.clear(Magnum::FramebufferClear::Color|Magnum::FramebufferClear::Depth);
@@ -139,6 +143,10 @@ private:
 		previousMousePosition = e.position();
 		e.setAccepted();
 	}
+	virtual void mouseReleaseEvent(MouseEvent &e) override
+	{
+		//
+	}
 	virtual void mouseMoveEvent(MouseMoveEvent &e) override
 	{
 		if(!(e.buttons() & MouseMoveEvent::Button::Left)) return;
@@ -156,6 +164,18 @@ private:
 		previousMousePosition = e.position();
 		e.setAccepted();
 		redraw();
+	}
+	virtual void keyPressEvent(KeyEvent &e) override
+	{
+		if(e.key() == KeyEvent::Key::Esc)
+		{
+			e.setAccepted();
+			exit();
+		}
+	}
+	virtual void keyReleaseEvent(KeyEvent &e) override
+	{
+		//
 	}
 
 	Magnum::Timeline timeline;
