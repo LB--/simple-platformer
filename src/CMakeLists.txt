@@ -39,21 +39,18 @@ target_sources(simple-platformer PRIVATE
 )
 set_property(TARGET simple-platformer PROPERTY CXX_STANDARD 14)
 target_include_directories(simple-platformer
-	PUBLIC
-		${MAGNUM_INCLUDE_DIRS}
-		${MAGNUM_APPLICATION_INCLUDE_DIRS}
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(simple-platformer
-	${MAGNUM_LIBRARIES}
-	${MAGNUM_APPLICATION_LIBRARIES}
-	${MAGNUM_MESHTOOLS_LIBRARIES}
-	${MAGNUM_PRIMITIVES_LIBRARIES}
-	${MAGNUM_SCENEGRAPH_LIBRARIES}
-	${MAGNUM_SHADERS_LIBRARIES}
-	${MAGNUM_TEXT_LIBRARIES}
+	Magnum::Magnum
+	Magnum::Application
+	Magnum::MeshTools
+	Magnum::Primitives
+	Magnum::SceneGraph
+	Magnum::Shaders
+	Magnum::Text
 )
 
 install(
