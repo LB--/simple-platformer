@@ -50,7 +50,7 @@ Follow the instructions at that link and then ensure that the DLL and lib files 
 (Or include the path to them in `CMAKE_PREFIX_PATH`)
 
 For some reason building with MSVC makes `find_package` less smart, and you may have to battle the dreaded `Could NOT find Freetype (missing: FREETYPE_LIBRARY) (found version "2.6.1")`.
-If you're having trouble, open an issue with a link to your CMake build log on https://gist.github.com/ and I'll try to help.
+If you're having trouble, put your CMake build log on https://gist.github.com/ and [ask for help in chat](https://gitter.im/LB--/simple-platformer).
 
 ### Building on Linux
 
