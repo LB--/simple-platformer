@@ -79,8 +79,10 @@ struct SimplePlatformer final
 		font->fillGlyphCache(glyph_cache, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!'\"\\/[]{}<>()|");
 
 		//set up the UI
-		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(timeline), std::ref(*font), std::cref(glyph_cache));
 		ui.addChild<simplat::ui::Title>(std::ref(ui_drawables), std::ref(*font), std::ref(glyph_cache));
+		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(tps), std::ref(*font), std::cref(glyph_cache));
+		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(fps), std::ref(*font), std::cref(glyph_cache))
+			.setTransformation(Matrix3::translation(Vector2::yAxis(-0.05f))); //TODO
 
 		//angle the cube
 		transformation
@@ -111,7 +113,8 @@ struct SimplePlatformer final
 			.setViewport(Magnum::defaultFramebuffer.viewport().size());
 
 		setSwapInterval(1); //enable VSync
-		timeline.start();
+		tps.start();
+		fps.start();
 	}
 
 private:
@@ -123,7 +126,7 @@ private:
 	}
 	virtual void tickEvent() override
 	{
-		//
+		tps.nextFrame();
 	}
 	virtual void drawEvent() override
 	{
@@ -134,7 +137,7 @@ private:
 
 		swapBuffers();
 		redraw();
-		timeline.nextFrame();
+		fps.nextFrame();
 	}
 	virtual void mousePressEvent(MouseEvent &e) override
 	{
@@ -178,7 +181,7 @@ private:
 		//
 	}
 
-	Magnum::Timeline timeline;
+	Magnum::Timeline tps, fps;
 
 	using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 	using Scene3D  = SceneGraph::Scene <SceneGraph::MatrixTransformation3D>;
@@ -186,7 +189,7 @@ private:
 	Object3D &camera_object {scene.addChild<Object3D>()};
 	SceneGraph::Camera3D &camera {camera_object.addFeature<SceneGraph::Camera3D>()};
 	SceneGraph::DrawableGroup3D drawables;
-	simplat::object::Cube &cube {scene.addChild<simplat::object::Cube>(std::ref(drawables), std::cref(timeline))};
+	simplat::object::Cube &cube {scene.addChild<simplat::object::Cube>(std::ref(drawables), std::cref(tps))};
 
 	Corrade::PluginManager::Manager<Text::AbstractFont> font_plugins;
 	std::unique_ptr<Text::AbstractFont> font;

@@ -36,7 +36,7 @@ namespace simplat { namespace ui
 			);
 			shader
 				.setColor(Magnum::Color4{1.0f, 0.0f})
-;//				.setSmoothness(0.075f);
+				.setSmoothness(0.1f);
 		}
 
 	private:
@@ -80,7 +80,8 @@ namespace simplat { namespace ui
 				Magnum::Matrix3::translation
 				(
 					1.0f/cam.projectionMatrix().rotationScaling().diagonal()
-				)
+				) *
+				transmat
 			);
 			renderer.mesh().draw(shader);
 		}
