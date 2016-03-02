@@ -61,7 +61,7 @@ struct SimplePlatformer final
 //		Renderer::enable(Renderer::Feature::DepthTest); //breaks text rendering
 		Renderer::enable(Renderer::Feature::FaceCulling);
 		Renderer::enable(Renderer::Feature::Blending);
-		Renderer::setBlendFunction(BlendFunction::One, BlendFunction::OneMinusSourceAlpha);
+		Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
 		Renderer::setBlendEquation(BlendEquation::Add, BlendEquation::Add);
 
 		//load the font

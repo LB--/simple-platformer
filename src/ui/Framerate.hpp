@@ -35,7 +35,7 @@ namespace simplat { namespace ui
 				Magnum::BufferUsage::StaticDraw
 			);
 			shader
-				.setColor(Magnum::Color4{1.0f, 0.0f})
+				.setColor(Magnum::Color4{1.0f, 0.5f})
 				.setSmoothness(0.1f);
 		}
 

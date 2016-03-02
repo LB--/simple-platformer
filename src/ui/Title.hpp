@@ -38,8 +38,8 @@ namespace simplat { namespace ui
 			);
 			shader
 				.setVectorTexture(glyphs.texture())
-				.setColor(Magnum::Color4{1.0f, 0.5f}) //TODO: does alpha work?
-				.setOutlineColor(Magnum::Color3{0.0f, 0.7f, 0.0f})
+				.setColor(Magnum::Color4{1.0f, 0.75f})
+				.setOutlineColor(Magnum::Color4{0.0f, 0.7f, 0.0f, 0.75f})
 				.setOutlineRange(0.45f, 0.35f)
 				.setSmoothness(0.025f);
 		}
