@@ -62,7 +62,7 @@ struct SimplePlatformer final
 		Renderer::enable(Renderer::Feature::FaceCulling);
 		Renderer::enable(Renderer::Feature::Blending);
 		Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
-		Renderer::setBlendEquation(BlendEquation::Add, BlendEquation::Add);
+//		Renderer::setBlendEquation(BlendEquation::Add, BlendEquation::Add);
 
 		//load the font
 		font = font_plugins.loadAndInstantiate("FreeTypeFont");
