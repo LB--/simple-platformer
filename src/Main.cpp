@@ -25,7 +25,7 @@
 #include <memory>
 #include <string>
 
-using Magnum::Math::operator""_degf;
+using Magnum::Math::Literals::operator""_degf;
 using Magnum::Matrix3;
 using Magnum::Matrix4;
 using Magnum::Renderer;
@@ -89,7 +89,6 @@ struct SimplePlatformer final
 			= Matrix4::rotationX(Magnum::Deg(30.0f))
 			* Matrix4::rotationY(Magnum::Deg(40.0f));
 		cube.setTransformation(transformation);
-
 
 		//set up the 3D camera
 		camera_object.translate(Vector3::zAxis(5.0f));
