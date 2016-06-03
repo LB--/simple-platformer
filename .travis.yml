@@ -3,26 +3,13 @@ sudo: false
 matrix:
   include:
     - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise
-            - llvm-toolchain-precise-3.7
-          packages:
-            - clang-3.8
-            - g++-5
-            - libglew-dev
-            - libopenal-dev
-    - os: linux
       compiler: gcc
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5
+            - g++-6
             - libglew-dev
             - libopenal-dev
 cache:
@@ -34,10 +21,8 @@ cache:
   - "deps"
 
 before_install:
-  - if [ "$CC"  == "gcc"     ]; then export CC=gcc-5; fi
-  - if [ "$CXX" == "g++"     ]; then export CXX=g++-5; fi
-  - if [ "$CC"  == "clang"   ]; then export CC=clang-3.8; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX=clang++-3.8; fi
+  - if [ "$CC"  == "gcc"     ]; then export CC=gcc-6; fi
+  - if [ "$CXX" == "g++"     ]; then export CXX=g++-6; fi
   - pushd . && cd $HOME
   - git clone https://github.com/LB--/travis.git travis
   - source "./travis/update-cmake.sh"
@@ -48,9 +33,9 @@ install:
   # Build SDL2
   - if [ ! -d "$HOME/SDL2/build/install/lib" ]; then export REBUILD_SDL2="yes"; else export REBUILD_SDL2="no"; fi
   - if [ "$REBUILD_SDL2" == "yes" ]; then cd $HOME && rm -rf SDL2 && mkdir SDL2 && cd SDL2; fi
-  - if [ "$REBUILD_SDL2" == "yes" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.3.tar.gz && tar -xzvf SDL2-2.0.3.tar.gz; fi
+  - if [ "$REBUILD_SDL2" == "yes" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz; fi
   - if [ "$REBUILD_SDL2" == "yes" ]; then mkdir build && cd build; fi
-  - if [ "$REBUILD_SDL2" == "yes" ]; then cmake ../SDL2-2.0.3 -DCMAKE_INSTALL_PREFIX="$(pwd)/install" -DCMAKE_BUILD_TYPE=Release; fi
+  - if [ "$REBUILD_SDL2" == "yes" ]; then cmake ../SDL2-2.0.4 -DCMAKE_INSTALL_PREFIX="$(pwd)/install" -DCMAKE_BUILD_TYPE=Release; fi
   - if [ "$REBUILD_SDL2" == "yes" ]; then cmake --build . --target install; fi
   - export PATH="$HOME/SDL2/build/install:$PATH"
   - popd
