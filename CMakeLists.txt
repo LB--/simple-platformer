@@ -31,26 +31,21 @@ ExternalProject_Add(Magnum
 		${CUSTOM_MAGNUM_ARGS}
 	TEST_EXCLUDE_FROM_MAIN 1
 )
-if(NOT MSVC)
-	set(FREETYPE_TARGET "FreeType")
-	ExternalProject_Add(${FREETYPE_TARGET}
-		SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/freetype2"
-		BUILD_ALWAYS 1
-		LIST_SEPARATOR "#"
-		CMAKE_ARGS
-			"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-			"-DBUILD_SHARED_LIBS=ON"
-			${CUSTOM_FREETYPE_ARGS}
-		TEST_EXCLUDE_FROM_MAIN 1
-	)
-else()
-	message(WARNING "FreeType needs to be built as shared, not static - see http://stackoverflow.com/a/7387618/1959975 for help")
-endif()
+ExternalProject_Add(FreeType
+	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/freetype2"
+	BUILD_ALWAYS 1
+	LIST_SEPARATOR "#"
+	CMAKE_ARGS
+		"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+		"-DBUILD_SHARED_LIBS=OFF"
+		${CUSTOM_FREETYPE_ARGS}
+	TEST_EXCLUDE_FROM_MAIN 1
+)
 ExternalProject_Add(MagnumPlugins
 	DEPENDS
 		Corrade
 		Magnum
-		${FREETYPE_TARGET}
+		FreeType
 	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/magnum-plugins"
 	BUILD_ALWAYS 1
 	LIST_SEPARATOR "#"

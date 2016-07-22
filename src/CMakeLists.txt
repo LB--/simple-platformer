@@ -1,4 +1,7 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.4)
+
+set(CMAKE_CXX_STANDARD 14 CACHE STRING "Must be at least 14")
+option(CMAKE_CXX_EXTENSIONS "C++ language extensions" OFF)
 
 project(simple-platformer
 	VERSION 0.0.0
@@ -34,10 +37,10 @@ else()
 		"Main.cpp"
 	)
 endif()
-target_sources(simple-platformer PRIVATE
-	${SimplePlatformer_Resources}
+target_sources(simple-platformer
+	PRIVATE
+		${SimplePlatformer_Resources}
 )
-set_property(TARGET simple-platformer PROPERTY CXX_STANDARD 14)
 target_include_directories(simple-platformer
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
@@ -58,6 +61,9 @@ install(
 		simple-platformer
 	RUNTIME DESTINATION bin
 )
+
+add_subdirectory(object)
+add_subdirectory(ui)
 
 enable_testing()
 
