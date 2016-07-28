@@ -10,3 +10,6 @@
 [submodule "deps/magnum-plugins"]
 	path = deps/magnum-plugins
 	url = git://github.com/mosra/magnum-plugins.git
+[submodule "deps/magnum-extras"]
+	path = deps/magnum-extras
+	url = git://github.com/mosra/magnum-extras.git

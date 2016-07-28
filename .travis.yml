@@ -16,7 +16,6 @@ cache:
   apt: true
   directories:
   - "$HOME/.travis/cmake/build/install"
-  - "$HOME/SDL2/build/install"
   - "build"
   - "deps"
 
@@ -30,19 +29,20 @@ before_install:
 
 install:
   - pushd .
-  # Build SDL2
-  - if [ ! -d "$HOME/SDL2/build/install/lib" ]; then export REBUILD_SDL2="yes"; else export REBUILD_SDL2="no"; fi
-  - if [ "$REBUILD_SDL2" == "yes" ]; then cd $HOME && rm -rf SDL2 && mkdir SDL2 && cd SDL2; fi
-  - if [ "$REBUILD_SDL2" == "yes" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz; fi
-  - if [ "$REBUILD_SDL2" == "yes" ]; then mkdir build && cd build; fi
-  - if [ "$REBUILD_SDL2" == "yes" ]; then cmake ../SDL2-2.0.4 -DCMAKE_INSTALL_PREFIX="$(pwd)/install" -DCMAKE_BUILD_TYPE=Release; fi
-  - if [ "$REBUILD_SDL2" == "yes" ]; then cmake --build . --target install; fi
-  - export PATH="$HOME/SDL2/build/install:$PATH"
   - popd
 
 script:
   - git submodule foreach 'git add --all && git reset --hard'
   - git add --all && git reset --hard
+
+  # merge magnum-plugins patch if needed
+  - pushd .
+  - cd deps/magnum-plugins
+  - git remote add LB https://github.com/LB--/magnum-plugins.git || true
+  - git fetch LB || true
+  - git merge LB/master || true
+  - popd
+
   - if [ ! -d "build/install" ]; then export FROM_SCRATCH="yes"; else export FROM_SCRATCH="no"; fi
   - mkdir -p build && cd build
   - export PATH="$(pwd)/install/bin:$PATH"

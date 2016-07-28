@@ -18,6 +18,10 @@
 #include <Magnum/Text/AbstractFont.h>
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
 #include <Magnum/Timeline.h>
+#include <Magnum/Ui/Anchor.h>
+#include <Magnum/Ui/Button.h>
+#include <Magnum/Ui/Plane.h>
+#include <Magnum/Ui/UserInterface.h>
 #include <Magnum/Version.h>
 
 #include <cstdlib>
@@ -133,6 +137,11 @@ private:
 
 		camera.draw(drawables);
 		ui_camera.draw(ui_drawables);
+
+		Magnum::Ui::UserInterface user_interface {Vector2{854, 480}, Vector2i{1280, 720}, *font};
+		Magnum::Ui::Plane ui_plane {user_interface, Magnum::Ui::Anchor{Magnum::Ui::Snap::Top, Magnum::Range2D{{0, 0}, {854, 480}}}, 10, 10, 1000};
+		Magnum::Ui::Button ui_button {ui_plane, Magnum::Ui::Anchor{Magnum::Ui::Snap::Top, Magnum::Range2D{{0, 0}, {160, 90}}}, "Test Button"};
+		user_interface.draw();
 
 		swapBuffers();
 		redraw();

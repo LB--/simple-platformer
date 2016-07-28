@@ -18,28 +18,29 @@ find_package(Magnum REQUIRED
 		Sdl2Application
 		Text
 )
+find_package(MagnumExtras REQUIRED
+	COMPONENTS
+		Ui
+)
+find_library(SDL2_MAIN
+	NAMES
+		SDL2main
+)
 
 configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/config.hh"
+	"${CMAKE_CURRENT_SOURCE_DIR}/config.in.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/config.h"
 )
 
 corrade_add_resource(SimplePlatformer_Resources "data.corrade")
 
-option(SHOW_WINDOWS_CONSOLE "Show the console on Windows" $<$<CONFIG:Debug>:ON>)
-
-if(WIN32 AND NOT SHOW_WINDOWS_CONSOLE)
-	add_executable(simple-platformer WIN32
-		"Main.cpp"
-	)
-else()
-	add_executable(simple-platformer
-		"Main.cpp"
-	)
-endif()
-target_sources(simple-platformer
-	PRIVATE
-		${SimplePlatformer_Resources}
+add_executable(simple-platformer
+	"Main.cpp"
+	${SimplePlatformer_Resources}
+)
+set_target_properties(simple-platformer
+	PROPERTIES
+		WIN32_EXECUTABLE $<CONFIG:Release>
 )
 target_include_directories(simple-platformer
 	PRIVATE
@@ -54,6 +55,8 @@ target_link_libraries(simple-platformer
 	Magnum::SceneGraph
 	Magnum::Shaders
 	Magnum::Text
+	MagnumExtras::Ui
+	$<$<CONFIG:Release>:${SDL2_MAIN}>
 )
 
 install(
