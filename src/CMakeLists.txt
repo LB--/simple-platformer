@@ -28,8 +28,8 @@ find_library(SDL2_MAIN
 )
 
 configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/config.in.h"
-	"${CMAKE_CURRENT_BINARY_DIR}/config.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/config.in.hpp"
+	"${CMAKE_CURRENT_BINARY_DIR}/config.hpp"
 )
 
 corrade_add_resource(SimplePlatformer_Resources "data.corrade")

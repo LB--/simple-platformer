@@ -1,4 +1,4 @@
-#include "config.h"
+#include "config.hpp"
 
 #include "object/Cube.hpp"
 #include "ui/Framerate.hpp"
