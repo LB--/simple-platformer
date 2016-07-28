@@ -35,17 +35,15 @@ ExternalProject_Add(Corrade
 	TEST_EXCLUDE_FROM_MAIN 1
 )
 if(MSVC OR MINGW)
-	include(CheckTypeSize)
-	check_type_size("void *" _sizeof_void_pointer)
 	if(MSVC)
 		set(_sdl2_url "https://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-VC.zip")
-		if(_sizeof_void_pointer EQUAL 4)
+		if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 			set(_sdl2_install
 				cmake -E copy_directory "include" "${CMAKE_INSTALL_PREFIX}/include/SDL2" &&
 				cmake -E copy_directory "lib/x86" "${CMAKE_INSTALL_PREFIX}/lib" &&
 				cmake -E copy "lib/x86/SDL2.dll" "${CMAKE_INSTALL_PREFIX}/bin/SDL2.dll"
 			)
-		elseif(_sizeof_void_pointer EQUAL 8)
+		elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 			set(_sdl2_install
 				cmake -E copy_directory "include" "${CMAKE_INSTALL_PREFIX}/include/SDL2" &&
 				cmake -E copy_directory "lib/x64" "${CMAKE_INSTALL_PREFIX}/lib" &&
@@ -54,11 +52,11 @@ if(MSVC OR MINGW)
 		endif()
 	elseif(MINGW)
 		set(_sdl2_url "https://www.libsdl.org/release/SDL2-devel-${SDL2_VERSION}-mingw.tar.gz")
-		if(_sizeof_void_pointer EQUAL 4)
+		if(CMAKE_SIZEOF_VOID_P EQUAL 4)
 			set(_sdl2_install
 				cmake -E copy_directory "i686-w64-mingw32" "${CMAKE_INSTALL_PREFIX}"
 			)
-		elseif(_sizeof_void_pointer EQUAL 8)
+		elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 			set(_sdl2_install
 				cmake -E copy_directory "x86_64-w64-mingw32" "${CMAKE_INSTALL_PREFIX}"
 			)
