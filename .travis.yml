@@ -34,15 +34,6 @@ install:
 script:
   - git submodule foreach 'git add --all && git reset --hard'
   - git add --all && git reset --hard
-
-  # merge magnum-plugins patch if needed
-  - pushd .
-  - cd deps/magnum-plugins
-  - git remote add LB https://github.com/LB--/magnum-plugins.git || true
-  - git fetch LB || true
-  - git merge LB/master || true
-  - popd
-
   - if [ ! -d "build/install" ]; then export FROM_SCRATCH="yes"; else export FROM_SCRATCH="no"; fi
   - mkdir -p build && cd build
   - export PATH="$(pwd)/install/bin:$PATH"
