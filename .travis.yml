@@ -27,10 +27,6 @@ before_install:
   - source "./travis/update-cmake.sh"
   - popd
 
-install:
-  - pushd .
-  - popd
-
 script:
   - git submodule foreach 'git add --all && git reset --hard'
   - git add --all && git reset --hard
