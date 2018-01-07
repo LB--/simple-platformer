@@ -6,7 +6,7 @@ project(simple-platformer-build
 
 set(CMAKE_C_FLAGS "" CACHE STRING "C flags")
 set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ flags")
-set(SDL2_VERSION "2.0.4" CACHE STRING "The version of SDL2 to use")
+set(SDL2_VERSION "2.0.7" CACHE STRING "The version of SDL2 to use")
 
 set(_global_args
 	"-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
@@ -108,13 +108,17 @@ ExternalProject_Add(Magnum
 		${CUSTOM_MAGNUM_ARGS}
 	TEST_EXCLUDE_FROM_MAIN 1
 )
+set(_freetype_shared ON)
+if(WIN32 AND NOT MINGW)
+	set(_freetype_shared OFF)
+endif()
 ExternalProject_Add(FreeType
 	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/freetype2"
 	BUILD_ALWAYS 1
 	LIST_SEPARATOR "#"
 	CMAKE_ARGS
 		${_global_args}
-		"-DBUILD_SHARED_LIBS=OFF"
+		"-DBUILD_SHARED_LIBS=${_freetype_shared}"
 		${CUSTOM_FREETYPE_ARGS}
 	TEST_EXCLUDE_FROM_MAIN 1
 )

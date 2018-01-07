@@ -51,17 +51,17 @@ namespace simplat { namespace object
 
 	private:
 		Magnum::Timeline const &timeline;
-		Magnum::Color3 color = Magnum::Color3::fromHSV(Magnum::Deg(35.0f), 1.0f, 1.0f);
+		Magnum::Color3 color = Magnum::Color3::fromHsv(Magnum::Deg(35.0f), 1.0f, 1.0f);
 		Magnum::Mesh mesh;
 		Magnum::Buffer vertices, indices;
 		Magnum::Shaders::Phong shader;
 
 		virtual void draw(Magnum::Matrix4 const &transmat, Magnum::SceneGraph::Camera3D &cam) override
 		{
-			color = Magnum::Color3::fromHSV(color.hue() + Magnum::Deg(90.0*timeline.previousFrameDuration()), 1.0f, 1.0f);
+			color = Magnum::Color3::fromHsv(color.hue() + Magnum::Deg(90.0*timeline.previousFrameDuration()), 1.0f, 1.0f);
 			shader
 				.setDiffuseColor(color)
-				.setAmbientColor(Magnum::Color3::fromHSV(color.hue(), 1.0f, 0.3f))
+				.setAmbientColor(Magnum::Color3::fromHsv(color.hue(), 1.0f, 0.3f))
 				.setTransformationMatrix(transmat)
 				.setNormalMatrix(transmat.rotationScaling())
 				.setProjectionMatrix(cam.projectionMatrix());
