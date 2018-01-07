@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <functional>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 using Magnum::Math::Literals::operator""_degf;
@@ -41,6 +42,21 @@ using Magnum::Vector2;
 using Magnum::Vector2i;
 using Magnum::Vector3;
 
+auto loadFont(Corrade::PluginManager::Manager<Text::AbstractFont> &font_plugins, Text::DistanceFieldGlyphCache &glyph_cache, Corrade::Utility::Resource const &res, std::string const &path, Magnum::Float const size)
+{
+	auto font = font_plugins.loadAndInstantiate("FreeTypeFont");
+	if(!font)
+	{
+		throw std::runtime_error{"Could not loadAndInstantiate FreeTypeFont"};
+	}
+	if(!font->openSingleData(res.getRaw(path), size))
+	{
+		throw std::runtime_error{"Could not open font file "+path};
+	}
+	font->fillGlyphCache(glyph_cache, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!'\"\\/[]{}<>()|");
+	return font;
+}
+
 struct SimplePlatformer final
 : Magnum::Platform::Application
 {
@@ -53,8 +69,6 @@ struct SimplePlatformer final
 				.setSize({1280, 720})
 				.setWindowFlags(Configuration::WindowFlag::Resizable)
 		}
-	, font_plugins{MAGNUM_PLUGINS_FONT_DIR}
-	, glyph_cache{Vector2i{2048}, Vector2i{512}, 22}
 	{
 		Magnum::Debug()
 			<< "This application is running on"
@@ -68,24 +82,10 @@ struct SimplePlatformer final
 		Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
 //		Renderer::setBlendEquation(BlendEquation::Add, BlendEquation::Add);
 
-		//load the font
-		font = font_plugins.loadAndInstantiate("FreeTypeFont");
-		if(!font)
-		{
-			std::exit(EXIT_FAILURE);
-		}
-		Corrade::Utility::Resource res {"data"};
-		if(!font->openSingleData(res.getRaw("data/OpenSans/OpenSans-Regular.ttf"), 110.0f))
-		{
-			Magnum::Error() << "Cannot open font file";
-			std::exit(EXIT_FAILURE);
-		}
-		font->fillGlyphCache(glyph_cache, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!'\"\\/[]{}<>()|");
-
 		//set up the UI
-		ui.addChild<simplat::ui::Title>(std::ref(ui_drawables), std::ref(*font), std::ref(glyph_cache));
-		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(tps), std::ref(*font), std::cref(glyph_cache));
-		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(fps), std::ref(*font), std::cref(glyph_cache))
+		ui.addChild<simplat::ui::Title>(std::ref(ui_drawables), std::ref(*title_font), std::ref(title_glyph_cache));
+		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(tps), std::ref(*title_font), std::cref(title_glyph_cache));
+		ui.addChild<simplat::ui::Framerate>(std::ref(ui_drawables), std::cref(fps), std::ref(*title_font), std::cref(title_glyph_cache))
 			.setTransformation(Matrix3::translation(Vector2::yAxis(-0.05f))); //TODO
 
 		//angle the cube
@@ -138,9 +138,6 @@ private:
 		camera.draw(drawables);
 		ui_camera.draw(ui_drawables);
 
-		Magnum::Ui::UserInterface user_interface {Vector2{854, 480}, Vector2i{1280, 720}, *font};
-		Magnum::Ui::Plane ui_plane {user_interface, Magnum::Ui::Anchor{Magnum::Ui::Snap::Top, Magnum::Range2D{{0, 0}, {854, 480}}}, 10, 10, 1000};
-		Magnum::Ui::Button ui_button {ui_plane, Magnum::Ui::Anchor{Magnum::Ui::Snap::Top, Magnum::Range2D{{0, 0}, {160, 90}}}, "Test Button"};
 		user_interface.draw();
 
 		swapBuffers();
@@ -189,6 +186,8 @@ private:
 		//
 	}
 
+	Corrade::Utility::Resource res {"data"};
+
 	Magnum::Timeline tps, fps;
 
 	using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
@@ -199,9 +198,15 @@ private:
 	SceneGraph::DrawableGroup3D drawables;
 	simplat::object::Cube &cube {scene.addChild<simplat::object::Cube>(std::ref(drawables), std::cref(tps))};
 
-	Corrade::PluginManager::Manager<Text::AbstractFont> font_plugins;
-	std::unique_ptr<Text::AbstractFont> font;
-	Text::DistanceFieldGlyphCache glyph_cache;
+	Corrade::PluginManager::Manager<Text::AbstractFont> font_plugins {MAGNUM_PLUGINS_FONT_DIR};
+	Text::DistanceFieldGlyphCache title_glyph_cache {Vector2i{2048}, Vector2i{512}, 22};
+	Text::DistanceFieldGlyphCache    ui_glyph_cache {Vector2i{2048}, Vector2i{512}, 22};
+	std::unique_ptr<Text::AbstractFont> title_font {loadFont(font_plugins, title_glyph_cache, res, "data/OpenSans/OpenSans-Regular.ttf", 110.0f)};
+	std::unique_ptr<Text::AbstractFont>    ui_font {loadFont(font_plugins,    ui_glyph_cache, res, "data/OpenSans/OpenSans-Regular.ttf", 20.0f)};
+
+	Magnum::Ui::UserInterface user_interface {Vector2{854, 480}, Vector2i{1280, 720}, *ui_font};
+	Magnum::Ui::Plane ui_plane {user_interface, Magnum::Ui::Anchor{Magnum::Ui::Snap::Bottom, Magnum::Range2D{{0, 0}, {854, 480}}}, 10, 10, 1000};
+	Magnum::Ui::Button ui_button {ui_plane, Magnum::Ui::Anchor{Magnum::Ui::Snap::Bottom, Magnum::Range2D{{0, 0}, {160, 90}}}, "Test Button"};
 
 	using Object2D = SceneGraph::Object<SceneGraph::MatrixTransformation2D>;
 	using Scene2D  = SceneGraph::Scene <SceneGraph::MatrixTransformation2D>;
